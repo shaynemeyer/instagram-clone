@@ -1,8 +1,10 @@
 # Instagram Clone
 
+A React web application that mimics Instagram.
 
 ## Resources
 
+- [React Router](https://reactrouter.com/en/main)
 - [React Query](https://tanstack.com/query/v3/) - Making working with data easier.
 - [TailwindCSS](https://tailwindcss.com/) - Styling.
 - [JavaScript Cookie](https://github.com/js-cookie/js-cookie) - Working with cookies.
