@@ -10,7 +10,7 @@ import os
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-SECRET_KEY = os.getenv("ACCESS_TOKEN_SECRET_KEY")
+SECRET_KEY = "some secret key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
