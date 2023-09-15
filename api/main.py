@@ -4,6 +4,11 @@ from db.database import engine
 from routers import user, post
 from fastapi.staticfiles import StaticFiles
 from auth import authentication
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()  # Loads environment variables from .env file
 
 
 app = FastAPI()
@@ -19,14 +24,13 @@ def root():
     return "hello world"
 
 
-# @app.get("/info")
-# async def info():
-#     return {
-#         "app_name": settings.app_name,
-#         "admin_email": settings.admin_email,
-#         "items_per_user": settings.items_per_user,
-#         "secret_key": settings.ACCESS_TOKEN_SECRET_KEY,
-#     }
+@app.get("/info")
+async def info():
+    return {
+        "app_name": os.environ.get("APP_NAME"),
+        "admin_email": os.environ.get("ADMIN_EMAIL"),
+        "items_per_user": os.environ.get("ITEMS_PER_USER"),
+    }
 
 
 models.Base.metadata.create_all(engine)
