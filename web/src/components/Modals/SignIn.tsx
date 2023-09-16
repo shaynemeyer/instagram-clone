@@ -1,6 +1,8 @@
 import { Dialog } from '@headlessui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-
+import { useUserLogin } from '../../libs/hooks/login';
+import { useEffect } from 'react';
+import Cookies from 'js-cookie';
 interface SignInProps {
   isOpen: boolean;
   setIsOpen: (value: React.SetStateAction<boolean>) => void;
@@ -12,13 +14,29 @@ type FormValues = {
 };
 
 function SignIn({ isOpen, setIsOpen }: SignInProps) {
+  const userLogin = useUserLogin();
+
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm<FormValues>();
-  const onSubmit: SubmitHandler<FormValues> = (data: FormValues) =>
+
+  const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
     console.log(data);
+    userLogin.mutate({ username: data.username, password: data.password });
+  };
+
+  useEffect(() => {
+    if (userLogin.data) {
+      const { access_token } = userLogin.data;
+      Cookies.set('access_token', access_token, {
+        secure: true,
+        sameSite: 'strict',
+      });
+      setIsOpen(false);
+    }
+  }, [userLogin.data]);
 
   return (
     <Dialog

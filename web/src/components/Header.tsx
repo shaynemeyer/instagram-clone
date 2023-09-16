@@ -1,6 +1,4 @@
 import { useState } from 'react';
-
-import { Dialog } from '@headlessui/react';
 import SignIn from './Modals/SignIn';
 import SignUp from './Modals/SignUp';
 
