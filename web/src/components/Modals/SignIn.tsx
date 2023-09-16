@@ -30,10 +30,7 @@ function SignIn({ isOpen, setIsOpen }: SignInProps) {
   useEffect(() => {
     if (userLogin.data) {
       const { access_token } = userLogin.data;
-      Cookies.set('access_token', access_token, {
-        secure: true,
-        sameSite: 'strict',
-      });
+      console.log({ access_token });
       setIsOpen(false);
     }
   }, [userLogin.data]);
