@@ -18,7 +18,7 @@ function Post({ post }: PostProps) {
   }, [post.image_url_type, post.image_url]);
 
   return (
-    <div className="flex flex-col w-2/3 mb-11 ml-auto mr-auto bg-white max-w-{500} border-b-2 border-gray-100 rounded-md">
+    <div className="flex flex-col w-2/3 mb-11 ml-auto mr-auto bg-white max-w-{500} border-2 border-gray-100 rounded-md">
       <div className="flex align-middle p-5">
         <img
           className="avatar-rd"
