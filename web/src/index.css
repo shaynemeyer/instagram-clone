@@ -12,6 +12,9 @@ body {
 }
 
 @layer components {
+  .input-errors {
+    @apply text-red-400 ml-2 text-xs;
+  }
   .avatar-rd {
     @apply w-10 h-10 rounded-full;
   }
