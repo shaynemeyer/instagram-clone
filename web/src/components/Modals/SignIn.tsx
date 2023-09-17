@@ -22,15 +22,22 @@ function SignIn({ isOpen, setIsOpen }: SignInProps) {
     handleSubmit,
   } = useForm<FormValues>();
 
-  const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
-    console.log(data);
-    userLogin.mutate({ username: data.username, password: data.password });
+  const onSubmit: SubmitHandler<FormValues> = (formData: FormValues) => {
+    userLogin.mutate({
+      username: formData.username,
+      password: formData.password,
+    });
+
+    if (userLogin.data) {
+      Cookies.set('access_token', userLogin.data?.access_token, {
+        secure: true,
+        sameSite: 'strict',
+      });
+    }
   };
 
   useEffect(() => {
     if (userLogin.data) {
-      const { access_token } = userLogin.data;
-      console.log({ access_token });
       setIsOpen(false);
     }
   }, [userLogin.data]);

@@ -1,10 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SignIn from './Modals/SignIn';
 import SignUp from './Modals/SignUp';
+import { useFetchCurrentUser } from '../libs/hooks/auth';
 
 function Header() {
   const [openSignIn, setOpenSignIn] = useState(false);
   const [openSignUp, setOpenSignUp] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+
+  const currentUser = useFetchCurrentUser();
+
+  useEffect(() => {
+    if (currentUser.data) {
+      setAuthenticated(currentUser.data?.message ? true : false);
+    }
+  }, [currentUser.data]);
 
   return (
     <>
@@ -20,12 +30,24 @@ function Header() {
 
         <div>
           <div className="mr-3">
-            <button className="btn-link" onClick={() => setOpenSignIn(true)}>
-              Login
-            </button>
-            <button className="btn-link" onClick={() => setOpenSignUp(true)}>
-              Signup
-            </button>
+            {authenticated ? (
+              <button>Logout</button>
+            ) : (
+              <>
+                <button
+                  className="btn-link"
+                  onClick={() => setOpenSignIn(true)}
+                >
+                  Login
+                </button>
+                <button
+                  className="btn-link"
+                  onClick={() => setOpenSignUp(true)}
+                >
+                  Signup
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

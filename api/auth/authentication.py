@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from typing import Annotated
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import JSONResponse
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from routers.schemas import User
 from db.database import get_db
 from sqlalchemy.orm.session import Session
 from db.models import DbUser
 from db.hashing import Hash
-from auth.oauth2 import create_access_token
+from auth.oauth2 import create_access_token, get_current_user
 
 router = APIRouter(tags=["authentication"])
 
@@ -25,9 +28,12 @@ def login(
         )
     access_token = create_access_token(data={"username": user.username})
 
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user_id": user.id,
-        "username": user.username,
-    }
+    response = JSONResponse(content={"message": "Logged in successfully"})
+    response.set_cookie("access_token", access_token, httponly=True)
+
+    return response
+
+
+@router.get("/users/me")
+async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
+    return current_user
