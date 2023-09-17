@@ -35,5 +35,5 @@ def login(
 
 
 @router.get("/users/me")
-async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
+async def read_users_me(access_token: str = Cookie(None)):
     return current_user
