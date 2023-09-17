@@ -8,14 +8,6 @@ function Header() {
   const [openSignUp, setOpenSignUp] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
 
-  const currentUser = useFetchCurrentUser();
-
-  useEffect(() => {
-    if (currentUser.data) {
-      setAuthenticated(currentUser.data?.message ? true : false);
-    }
-  }, [currentUser.data]);
-
   return (
     <>
       <SignIn isOpen={openSignIn} setIsOpen={setOpenSignIn} />
