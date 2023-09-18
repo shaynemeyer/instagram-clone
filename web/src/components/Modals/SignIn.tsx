@@ -1,7 +1,7 @@
 import { Dialog } from '@headlessui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useUserLogin } from '../../libs/hooks/login';
-import { useEffect, useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useEffect } from 'react';
 
 interface SignInProps {
   isOpen: boolean;
@@ -14,34 +14,27 @@ type FormValues = {
 };
 
 function SignIn({ isOpen, setIsOpen }: SignInProps) {
-  const [signInError, setSignInError] = useState('');
-  const userLogin = useUserLogin();
+  const authContext = useAuth();
 
   const {
     register,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm<FormValues>();
 
   const onSubmit: SubmitHandler<FormValues> = (formData: FormValues) => {
-    userLogin.mutate({
+    authContext.signIn({
       username: formData.username,
       password: formData.password,
     });
   };
 
   useEffect(() => {
-    if (userLogin.data) {
-      setIsOpen(false);
-      setSignInError('');
+    if (authContext.isAuthenticated) {
+      reset();
     }
-
-    if (userLogin.isError) {
-      const errorMsg = `Login Error: ${userLogin.error}`;
-      setSignInError(errorMsg);
-      console.log(errorMsg);
-    }
-  }, [userLogin.data, userLogin.isError, userLogin.error]);
+  }, [authContext.isAuthenticated, reset]);
 
   return (
     <Dialog
@@ -91,11 +84,8 @@ function SignIn({ isOpen, setIsOpen }: SignInProps) {
                 </p>
               )}
             </div>
-            {signInError ? (
-              <div className="input-errors mb-2">
-                There was an error signing in. Please check your username and
-                password and try again!
-              </div>
+            {authContext.authError ? (
+              <div className="input-errors mb-2">{authContext.authError}</div>
             ) : undefined}
             <button className="btn-default" type="submit">
               Login

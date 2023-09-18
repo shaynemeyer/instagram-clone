@@ -1,13 +1,23 @@
 import { useEffect, useState } from 'react';
 import SignIn from './Modals/SignIn';
 import SignUp from './Modals/SignUp';
-import { useFetchCurrentUser } from '../libs/hooks/auth';
+import { useAuth } from '../contexts/AuthContext';
 
 function Header() {
   const [openSignIn, setOpenSignIn] = useState(false);
   const [openSignUp, setOpenSignUp] = useState(false);
-  const [authenticated, setAuthenticated] = useState(false);
 
+  const authContext = useAuth();
+
+  const signOutUser = () => {
+    authContext.signOut();
+  };
+
+  useEffect(() => {
+    if (authContext.isAuthenticated) {
+      setOpenSignIn(false);
+    }
+  }, [authContext.isAuthenticated]);
   return (
     <>
       <SignIn isOpen={openSignIn} setIsOpen={setOpenSignIn} />
@@ -22,8 +32,8 @@ function Header() {
 
         <div>
           <div className="mr-3">
-            {authenticated ? (
-              <button>Logout</button>
+            {authContext.isAuthenticated ? (
+              <button onClick={() => signOutUser()}>Logout</button>
             ) : (
               <>
                 <button

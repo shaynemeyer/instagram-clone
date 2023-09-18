@@ -8,15 +8,17 @@ export const queryClient = new QueryClient(); // so this client can be used in a
 
 function App() {
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <div className="app">
-          <Header />
-          <Home />
-        </div>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <>
+          <div className="app">
+            <Header />
+            <Home />
+          </div>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
