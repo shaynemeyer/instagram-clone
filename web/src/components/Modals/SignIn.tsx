@@ -1,8 +1,8 @@
 import { Dialog } from '@headlessui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useUserLogin } from '../../libs/hooks/login';
-import { useEffect } from 'react';
-import Cookies from 'js-cookie';
+import { useEffect, useState } from 'react';
+
 interface SignInProps {
   isOpen: boolean;
   setIsOpen: (value: React.SetStateAction<boolean>) => void;
@@ -14,6 +14,7 @@ type FormValues = {
 };
 
 function SignIn({ isOpen, setIsOpen }: SignInProps) {
+  const [signInError, setSignInError] = useState('');
   const userLogin = useUserLogin();
 
   const {
@@ -27,20 +28,20 @@ function SignIn({ isOpen, setIsOpen }: SignInProps) {
       username: formData.username,
       password: formData.password,
     });
-
-    if (userLogin.data) {
-      Cookies.set('access_token', userLogin.data?.access_token, {
-        secure: true,
-        sameSite: 'strict',
-      });
-    }
   };
 
   useEffect(() => {
     if (userLogin.data) {
       setIsOpen(false);
+      setSignInError('');
     }
-  }, [userLogin.data]);
+
+    if (userLogin.isError) {
+      const errorMsg = `Login Error: ${userLogin.error}`;
+      setSignInError(errorMsg);
+      console.log(errorMsg);
+    }
+  }, [userLogin.data, userLogin.isError, userLogin.error]);
 
   return (
     <Dialog
@@ -90,6 +91,12 @@ function SignIn({ isOpen, setIsOpen }: SignInProps) {
                 </p>
               )}
             </div>
+            {signInError ? (
+              <div className="input-errors mb-2">
+                There was an error signing in. Please check your username and
+                password and try again!
+              </div>
+            ) : undefined}
             <button className="btn-default" type="submit">
               Login
             </button>
