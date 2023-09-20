@@ -1,46 +1,37 @@
-import { useEffect, useState } from 'react';
-import SignIn from './Modals/SignIn';
-import SignUp from './Modals/SignUp';
-import { useAuth } from '../contexts/AuthContext';
+'use client';
+import Image from 'next/image';
+import { useState } from 'react';
 
 function Header() {
   const [openSignIn, setOpenSignIn] = useState(false);
   const [openSignUp, setOpenSignUp] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const authContext = useAuth();
-
-  const signOutUser = () => {
-    authContext.signOut();
-  };
-
-  useEffect(() => {
-    if (authContext.isAuthenticated) {
-      setOpenSignIn(false);
-    }
-  }, [authContext.isAuthenticated]);
   return (
     <>
-      <SignIn isOpen={openSignIn} setIsOpen={setOpenSignIn} />
-      <SignUp isOpen={openSignUp} setIsOpen={setOpenSignUp} />
-
       <div className="sticky top-0 z-10 bg-white border-b-2 border-gray-100 object-contain flex items-center justify-between p-1">
-        <img
+        <Image
+          src="/images/ig-logo.png"
           className="object-contain w-48"
-          src="images/ig-logo.png"
           alt="Instagram"
+          width={100}
+          height={50}
+          priority
         />
-
         <div>
           <div className="mr-3">
-            {authContext.isAuthenticated ? (
-              <button className="btn-link" onClick={() => signOutUser()}>
+            {isAuthenticated ? (
+              <button
+                className="btn-link"
+                onClick={() => setIsAuthenticated(false)}
+              >
                 Logout
               </button>
             ) : (
               <>
                 <button
                   className="btn-link"
-                  onClick={() => setOpenSignIn(true)}
+                  onClick={() => setIsAuthenticated(true)}
                 >
                   Login
                 </button>

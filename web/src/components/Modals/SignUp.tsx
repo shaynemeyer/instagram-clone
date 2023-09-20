@@ -1,6 +1,8 @@
 import { Dialog } from '@headlessui/react';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useUserSignup } from '../../libs/hooks/user';
+import { useAuth } from '../../contexts/AuthContext';
 
 type FormValues = {
   username: string;
@@ -14,13 +16,37 @@ interface SignUpProps {
 }
 
 function SignUp({ isOpen, setIsOpen }: SignUpProps) {
+  const authContext = useAuth();
+  const userSignup = useUserSignup();
+  const [loginData, setLoginData] = useState<{
+    username: string;
+    password: string;
+  } | null>(null);
+
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm<FormValues>();
-  const onSubmit: SubmitHandler<FormValues> = (data: FormValues) =>
-    console.log(data);
+  const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
+    setLoginData({ username: data.username, password: data.password });
+    userSignup.mutate({
+      username: data.username,
+      password: data.password,
+      email: data.email,
+    });
+  };
+
+  useEffect(() => {
+    if (userSignup.data && userSignup.isSuccess) {
+      console.log('success');
+    }
+  }, [
+    userSignup.data,
+    userSignup.isError,
+    userSignup.error,
+    userSignup.isSuccess,
+  ]);
 
   return (
     <Dialog

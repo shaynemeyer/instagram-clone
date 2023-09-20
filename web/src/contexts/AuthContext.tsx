@@ -21,6 +21,7 @@ interface AuthContextType {
     password: string;
   }) => void;
   signOut: () => void;
+  authCheck: () => void;
   authError: string | null;
 }
 
@@ -65,9 +66,15 @@ export const AuthProvider: FunctionComponent<
   useEffect(() => {
     if (userLogin.isSuccess) {
       setAccessToken(userLogin.data?.access_token as string);
+      localStorage.setItem('access_token', userLogin.data?.access_token);
       setUserId(userLogin.data?.user_id as number);
+      localStorage.setItem(
+        'user_id',
+        userLogin.data?.user_id as unknown as string
+      );
       setIsAuthenticated(true);
       setUsername(userLogin.data?.username as string);
+      localStorage.setItem('username', userLogin.data?.username);
       setAuthError(null);
     }
 
@@ -78,11 +85,22 @@ export const AuthProvider: FunctionComponent<
 
   const signOut = () => {
     setAccessToken(null);
+    localStorage.removeItem('access_token');
     setUsername(null);
+    localStorage.removeItem('username');
     setUserId(null);
+    localStorage.removeItem('user_id');
     setIsAuthenticated(false);
   };
 
+  const authCheck = () => {
+    const accessToken = localStorage.getItem('access_token');
+    const userId = localStorage.getItem('user_id');
+    setAccessToken(accessToken);
+    setUsername(localStorage.getItem('username'));
+    setUserId(userId ? Number(userId) : null);
+    setIsAuthenticated(accessToken ? true : false);
+  };
   return (
     <AuthContext.Provider
       value={{
@@ -92,6 +110,7 @@ export const AuthProvider: FunctionComponent<
         isAuthenticated,
         signIn,
         signOut,
+        authCheck,
         authError,
       }}
     >

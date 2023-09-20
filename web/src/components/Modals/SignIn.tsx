@@ -1,7 +1,6 @@
 import { Dialog } from '@headlessui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAuth } from '../../contexts/AuthContext';
-import { useEffect } from 'react';
 
 interface SignInProps {
   isOpen: boolean;
@@ -30,16 +29,13 @@ function SignIn({ isOpen, setIsOpen }: SignInProps) {
     });
   };
 
-  useEffect(() => {
-    if (authContext.isAuthenticated) {
-      reset();
-    }
-  }, [authContext.isAuthenticated, reset]);
-
   return (
     <Dialog
       open={isOpen}
-      onClose={() => setIsOpen(false)}
+      onClose={() => {
+        reset();
+        setIsOpen(false);
+      }}
       className="relative z-50"
     >
       {/* The backdrop, rendered as a fixed sibling to the panel container */}

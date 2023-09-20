@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { config } from '../../libs/constants';
+import { LoginResponse } from '../../types/login';
 
 export type LoginProps = {
   username: string;
