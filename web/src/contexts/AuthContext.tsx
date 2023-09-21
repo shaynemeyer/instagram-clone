@@ -3,7 +3,6 @@ import {
   PropsWithChildren,
   createContext,
   useContext,
-  useEffect,
   useState,
 } from 'react';
 import { useUserLogin } from '../libs/hooks/login';
@@ -60,28 +59,25 @@ export const AuthProvider: FunctionComponent<
     username: string;
     password: string;
   }) => {
-    userLogin.mutate({ username, password });
+    userLogin.mutate(
+      { username, password },
+      {
+        onSuccess: (data) => {
+          setAccessToken(data?.access_token as string);
+          localStorage.setItem('access_token', data?.access_token);
+          setUserId(data?.user.id as number);
+          localStorage.setItem('user_id', data?.user.id as unknown as string);
+          setIsAuthenticated(true);
+          setUsername(data?.user.username as string);
+          localStorage.setItem('username', data?.user?.username);
+          setAuthError(null);
+        },
+        onError: () => {
+          setAuthError('Login failed');
+        },
+      }
+    );
   };
-
-  useEffect(() => {
-    if (userLogin.isSuccess) {
-      setAccessToken(userLogin.data?.access_token as string);
-      localStorage.setItem('access_token', userLogin.data?.access_token);
-      setUserId(userLogin.data?.user_id as number);
-      localStorage.setItem(
-        'user_id',
-        userLogin.data?.user_id as unknown as string
-      );
-      setIsAuthenticated(true);
-      setUsername(userLogin.data?.username as string);
-      localStorage.setItem('username', userLogin.data?.username);
-      setAuthError(null);
-    }
-
-    if (userLogin.isError) {
-      setAuthError('Login failed');
-    }
-  }, [userLogin.isSuccess, userLogin.isError, userLogin.data]);
 
   const signOut = () => {
     setAccessToken(null);

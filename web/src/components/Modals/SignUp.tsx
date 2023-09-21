@@ -1,5 +1,5 @@
 import { Dialog } from '@headlessui/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useUserSignup } from '../../libs/hooks/user';
 import { useAuth } from '../../contexts/AuthContext';
@@ -16,37 +16,42 @@ interface SignUpProps {
 }
 
 function SignUp({ isOpen, setIsOpen }: SignUpProps) {
+  const [signupError, setSignupError] = useState('');
   const authContext = useAuth();
   const userSignup = useUserSignup();
-  const [loginData, setLoginData] = useState<{
-    username: string;
-    password: string;
-  } | null>(null);
 
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm<FormValues>();
-  const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
-    setLoginData({ username: data.username, password: data.password });
-    userSignup.mutate({
-      username: data.username,
-      password: data.password,
-      email: data.email,
-    });
+  const onSubmit: SubmitHandler<FormValues> = (formData: FormValues) => {
+    setSignupError('');
+    userSignup.mutate(
+      {
+        username: formData.username,
+        password: formData.password,
+        email: formData.email,
+      },
+      {
+        onSuccess: (apiResponse) => {
+          if (formData?.password && apiResponse.username) {
+            setSignupError(''); // reset the error message
+            authContext.signIn({
+              username: apiResponse.username,
+              password: formData?.password,
+            });
+            setIsOpen(false); // close the modal
+          }
+        },
+        onError: () => {
+          setSignupError(
+            'Signup failed. Please check your input and try again.'
+          );
+        },
+      }
+    );
   };
-
-  useEffect(() => {
-    if (userSignup.data && userSignup.isSuccess) {
-      console.log('success');
-    }
-  }, [
-    userSignup.data,
-    userSignup.isError,
-    userSignup.error,
-    userSignup.isSuccess,
-  ]);
 
   return (
     <Dialog
@@ -114,6 +119,11 @@ function SignUp({ isOpen, setIsOpen }: SignUpProps) {
                   </p>
                 )}
               </div>
+              {signupError ? (
+                <p role="alert" className="input-errors">
+                  {signupError}
+                </p>
+              ) : null}
 
               <button type="submit" className="btn-default mb-4">
                 Sign up

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PostItem } from '../types/post';
 import { config } from '../libs/constants';
 
