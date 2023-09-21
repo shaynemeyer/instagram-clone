@@ -28,7 +28,7 @@ function Home() {
       )}
       <ImageUpload isOpen={imageUpIsOpen} setIsOpen={setImageUpIsOpen} />
       {authContext.username ? (
-        <button className="btn-default" onClick={() => setImageUpIsOpen(true)}>
+        <button className="btn-outlined" onClick={() => setImageUpIsOpen(true)}>
           Upload Photo
         </button>
       ) : (

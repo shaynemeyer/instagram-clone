@@ -1,5 +1,11 @@
 import { useState } from 'react';
 import { Dialog } from '@headlessui/react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+
+type FormValues = {
+  caption: string;
+  image: string;
+};
 
 type ImageUploadProps = {
   isOpen: boolean;
@@ -7,17 +13,17 @@ type ImageUploadProps = {
 };
 
 function ImageUpload({ isOpen, setIsOpen }: ImageUploadProps) {
-  const [caption, setCaption] = useState('');
-  // const [image, setImage] = useState(null);
+  const [signupError, setSignupError] = useState('');
 
-  const handleChange = () => {
-    console.log('handleChange clicked');
+  const onSubmit: SubmitHandler<FormValues> = (formData: FormValues) => {
+    setSignupError('');
+    console.log({ formData });
   };
-
-  const handleUpload = () => {
-    console.log('handleUpload clicked');
-    setIsOpen(false);
-  };
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<FormValues>();
 
   return (
     <Dialog
@@ -34,18 +40,32 @@ function ImageUpload({ isOpen, setIsOpen }: ImageUploadProps) {
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         {/* The actual dialog panel  */}
         <Dialog.Panel className="mx-auto max-w-sm rounded bg-white">
-          <div className="flex flex-col">
-            <input
-              type="text"
-              placeholder="Enter a caption"
-              onChange={(event) => setCaption(event.target.value)}
-              value={caption}
-            />
-            <input type="file" id="fileInput" onChange={handleChange} />
-            <button className="imageupload_button" onClick={handleUpload}>
-              Upload
-            </button>
-          </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-col p-4 gap-5 max-w-md">
+              <h2 className="border-b-2 text-xl font-bold">Upload an image</h2>
+              <input
+                type="text"
+                className="p-2"
+                placeholder="Enter a caption"
+                {...register('caption', { required: true, maxLength: 100 })}
+                aria-invalid={errors.caption ? 'true' : 'false'}
+              />
+              <input
+                type="file"
+                id="fileInput"
+                {...register('image', { required: true, maxLength: 100 })}
+                aria-invalid={errors.image ? 'true' : 'false'}
+              />
+
+              {signupError ? (
+                <p role="alert" className="input-errors">
+                  {signupError}
+                </p>
+              ) : null}
+
+              <button className="btn-default mb-4">Upload</button>
+            </div>
+          </form>
         </Dialog.Panel>
       </div>
     </Dialog>

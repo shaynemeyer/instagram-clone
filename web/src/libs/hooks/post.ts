@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { fetchAllPosts } from '../api/posts';
+import { fetchAllPosts } from '../api/post';
 
 const postsQuery = 'posts';
 

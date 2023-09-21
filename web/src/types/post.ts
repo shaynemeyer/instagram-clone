@@ -10,3 +10,5 @@ export type PostItem = {
   user: UserItem;
   comments: Array<CommentItem>;
 };
+
+export type UploadImageResponse = { filename: string };
