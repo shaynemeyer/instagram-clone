@@ -1,6 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
 import { config } from '../constants';
-import { PostItem, UploadImageResponse } from '../../types/post';
+import {
+  CreatePostResponse,
+  PostItem,
+  UploadImageResponse,
+} from '../../types/post';
 
 const sortNewestFirst = (data: Array<PostItem>) => {
   const result = data.sort((a: PostItem, b: PostItem) => {
@@ -38,6 +42,36 @@ export async function fetchAllPosts(): Promise<Array<PostItem>> {
   )) as AxiosResponse<Array<PostItem>>;
 
   return sortNewestFirst(data);
+}
+
+export type CreatePostProps = {
+  caption: string;
+  imageUrl: string;
+  imageUrlType?: string;
+};
+
+export async function create({
+  caption,
+  imageUrl,
+  imageUrlType = 'relative',
+}: CreatePostProps): Promise<CreatePostResponse> {
+  const { data } = await axios.post(
+    `${config.BASE_URL}post`,
+    {
+      image_url: imageUrl,
+      image_url_type: imageUrlType,
+      caption: caption,
+      creator_id: localStorage.getItem('user_id'),
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `bearer ${localStorage.getItem('access_token')}`,
+      },
+    }
+  );
+
+  return data;
 }
 
 export type UploadImageProps = {

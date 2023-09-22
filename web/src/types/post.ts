@@ -12,3 +12,21 @@ export type PostItem = {
 };
 
 export type UploadImageResponse = { filename: string };
+
+export type CreatePostResponse = {
+  id: number;
+  image_url: string;
+  image_url_type: string;
+  caption: string;
+  timestamp: string;
+  user: {
+    username: string;
+  };
+  comments: [
+    {
+      text: string;
+      username: string;
+      timestamp: string;
+    }
+  ];
+};

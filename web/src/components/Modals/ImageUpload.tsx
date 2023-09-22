@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useUploadImage } from '../../libs/hooks/post';
+import { useCreatePost, useUploadImage } from '../../libs/hooks/post';
+import { UploadImageResponse } from '../../types/post';
+import { queryClient } from '../../App';
 
 type FormValues = {
   caption: string;
@@ -15,9 +17,36 @@ type ImageUploadProps = {
 
 function ImageUpload({ isOpen, setIsOpen }: ImageUploadProps) {
   const [uploadError, setUploadError] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
 
   const uploadImage = useUploadImage();
+  const post = useCreatePost();
+
+  const createPost = ({
+    filename,
+    caption,
+  }: {
+    filename: string;
+    caption: string;
+  }) => {
+    if (filename && caption) {
+      setUploadError('');
+      post.mutate(
+        { caption, imageUrl: filename },
+        {
+          onSuccess: () => {
+            setIsOpen(false);
+            queryClient.invalidateQueries(['posts']);
+            window.scrollTo(0, 0);
+            reset();
+          },
+          onError: (err) => {
+            console.log({ err });
+            setUploadError('Could not upload image, please try again later.');
+          },
+        }
+      );
+    }
+  };
 
   const onSubmit: SubmitHandler<FormValues> = (formData: FormValues) => {
     setUploadError('');
@@ -26,9 +55,8 @@ function ImageUpload({ isOpen, setIsOpen }: ImageUploadProps) {
       uploadImage.mutate(
         { image: formData.image[0] },
         {
-          onSuccess: (data) => {
-            setImageUrl(data.filename);
-            console.log(data.filename);
+          onSuccess: ({ filename }: UploadImageResponse) => {
+            createPost({ filename, caption: formData.caption });
           },
           onError: (error) => {
             console.log({ error });
