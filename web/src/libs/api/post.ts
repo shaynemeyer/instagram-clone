@@ -41,22 +41,22 @@ export async function fetchAllPosts(): Promise<Array<PostItem>> {
 }
 
 export type UploadImageProps = {
-  image: string;
+  image: File;
 };
 
 export async function uploadImage({
   image,
 }: UploadImageProps): Promise<UploadImageResponse> {
+  console.log({ image });
   const { data } = await axios.post(
     `${config.BASE_URL}post/image`,
     {
       image,
     },
     {
-      withCredentials: true,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        'Content-Type': 'multipart/form-data',
+        Authorization: `bearer ${localStorage.getItem('access_token')}`,
       },
     }
   );

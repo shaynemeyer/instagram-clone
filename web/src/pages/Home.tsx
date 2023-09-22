@@ -27,13 +27,18 @@ function Home() {
         </div>
       )}
       <ImageUpload isOpen={imageUpIsOpen} setIsOpen={setImageUpIsOpen} />
-      {authContext.username ? (
-        <button className="btn-outlined" onClick={() => setImageUpIsOpen(true)}>
-          Upload Photo
-        </button>
-      ) : (
-        <p>You must be logged in to upload a photo</p>
-      )}
+      <div className="flex justify-center mb-5 -mt-8">
+        {authContext.username ? (
+          <button
+            className="btn-outlined"
+            onClick={() => setImageUpIsOpen(true)}
+          >
+            Upload Photo
+          </button>
+        ) : (
+          <p>You must be logged in to upload a photo</p>
+        )}
+      </div>
     </>
   );
 }

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useUploadImage } from '../../libs/hooks/post';
 
 type FormValues = {
   caption: string;
-  image: string;
+  image: FileList;
 };
 
 type ImageUploadProps = {
@@ -13,16 +14,37 @@ type ImageUploadProps = {
 };
 
 function ImageUpload({ isOpen, setIsOpen }: ImageUploadProps) {
-  const [signupError, setSignupError] = useState('');
+  const [uploadError, setUploadError] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+
+  const uploadImage = useUploadImage();
 
   const onSubmit: SubmitHandler<FormValues> = (formData: FormValues) => {
-    setSignupError('');
+    setUploadError('');
     console.log({ formData });
+    if (formData.image) {
+      uploadImage.mutate(
+        { image: formData.image[0] },
+        {
+          onSuccess: (data) => {
+            setImageUrl(data.filename);
+            console.log(data.filename);
+          },
+          onError: (error) => {
+            console.log({ error });
+            setUploadError('Error uploading image');
+          },
+        }
+      );
+    }
+
+    reset();
   };
   const {
     register,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm<FormValues>();
 
   return (
@@ -57,9 +79,9 @@ function ImageUpload({ isOpen, setIsOpen }: ImageUploadProps) {
                 aria-invalid={errors.image ? 'true' : 'false'}
               />
 
-              {signupError ? (
+              {uploadError ? (
                 <p role="alert" className="input-errors">
-                  {signupError}
+                  {uploadError}
                 </p>
               ) : null}
 
