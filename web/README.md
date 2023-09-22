@@ -6,6 +6,7 @@ A React web application that mimics Instagram.
 
 - [ ] Handle user logout when access token is expired.
 - [ ] Secure the access token better, by encrypting it when putting it into local storage and decryting it pulling it out or by using and `httpOnly` cookie.
+- [ ] Add tests
 
 ## Resources
 
