@@ -1,13 +1,23 @@
 import { useEffect, useState } from 'react';
 import { PostItem } from '../types/post';
 import { config } from '../libs/constants';
+import { useDeletePost } from '../libs/hooks/post';
+import { queryClient } from '../App';
 
 interface PostProps {
   post: PostItem;
 }
 
+type User = {
+  id: number;
+  username: string;
+} | null;
+
 function Post({ post }: PostProps) {
   const [imageUrl, setImageUrl] = useState('');
+  const [user, setUser] = useState<User>(null);
+
+  const postDelete = useDeletePost();
 
   useEffect(() => {
     if (post.image_url_type === 'absolute') {
@@ -16,6 +26,36 @@ function Post({ post }: PostProps) {
       setImageUrl(`${config.BASE_URL}${post.image_url}`);
     }
   }, [post.image_url_type, post.image_url]);
+
+  useEffect(() => {
+    const userId = localStorage.getItem('user_id');
+    const username = localStorage.getItem('username');
+
+    if (userId && username) {
+      setUser({ id: Number(userId), username } as User);
+    }
+  }, []);
+
+  const handleDelete = () => {
+    if (user && user.username === post.user.username) {
+      console.log(`delete user clicked by ${user.username}`);
+      postDelete.mutate(
+        { id: Number(post.id) },
+        {
+          onSuccess: (data) => {
+            window.scrollTo(0, 0);
+            console.log({ data });
+            setImageUrl('');
+            queryClient.invalidateQueries(['posts']);
+          },
+          onError: (err) => {
+            console.log({ err });
+            // todo: handle error better.
+          },
+        }
+      );
+    }
+  };
 
   return (
     <div className="flex flex-col w-2/3 mb-11 ml-auto mr-auto bg-white max-w-{500} border-2 border-gray-100 rounded-md">
@@ -27,7 +67,11 @@ function Post({ post }: PostProps) {
         />
         <div className="flex flex-1 items-center justify-between ml-2">
           <h3>{post.user.username}</h3>
-          <button className="btn-outlined">Delete</button>
+          {user && user.username === post.user.username && (
+            <button className="btn-outlined" onClick={handleDelete}>
+              Delete
+            </button>
+          )}
         </div>
       </div>
       {imageUrl ? (

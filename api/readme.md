@@ -7,6 +7,7 @@ An Instagram clone api allows you to post images, post comments to other users p
 ## TODOs
 
 - [ ] Add `/validate` token endpoint to check whether access token has expired
+- [ ] When removing a post, also remove the image from the bucket.
 
 ---
 

@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from 'react-query';
-import { fetchAllPosts, uploadImage, create } from '../api/post';
+import { fetchAllPosts, uploadImage, create, deletePost } from '../api/post';
 
 const postsQuery = 'posts';
 
@@ -12,4 +12,8 @@ export function useUploadImage() {
 }
 export function useCreatePost() {
   return useMutation(create);
+}
+
+export function useDeletePost() {
+  return useMutation(deletePost);
 }

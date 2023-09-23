@@ -97,3 +97,18 @@ export async function uploadImage({
 
   return data as UploadImageResponse;
 }
+
+export type DeletePostProps = {
+  id: number;
+};
+
+export async function deletePost({ id }: DeletePostProps): Promise<string> {
+  const { data } = await axios.delete(`${config.BASE_URL}post/delete/${id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `bearer ${localStorage.getItem('access_token')}`,
+    },
+  });
+
+  return data;
+}
