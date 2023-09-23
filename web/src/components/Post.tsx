@@ -136,10 +136,9 @@ function Post({ post }: PostProps) {
 
       {authContext.isAuthenticated && (
         <form
-          className="flex mt-3 ml-4 mr-4 mb-3 gap-2"
+          className="flex mt-3 ml-4 mr-4 mb-3 gap-2 border-t border-gray-100"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <hr />
           <input
             className="p-2 mr-4 w-full"
             type="text"
