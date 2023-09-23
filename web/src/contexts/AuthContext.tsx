@@ -6,6 +6,7 @@ import {
   useState,
 } from 'react';
 import { useUserLogin } from '../libs/hooks/login';
+import { tokenIsExpired } from '../libs/jwtHelper';
 
 interface AuthContextType {
   accessToken: string | null;
@@ -91,6 +92,13 @@ export const AuthProvider: FunctionComponent<
 
   const authCheck = () => {
     const accessToken = localStorage.getItem('access_token');
+    let expired = false;
+    if (accessToken) {
+      expired = tokenIsExpired(accessToken);
+    }
+
+    if (expired) signOut();
+
     const userId = localStorage.getItem('user_id');
     setAccessToken(accessToken);
     setUsername(localStorage.getItem('username'));
