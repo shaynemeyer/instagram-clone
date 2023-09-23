@@ -5,7 +5,7 @@ import { useDeletePost } from '../libs/hooks/post';
 import { queryClient } from '../App';
 import { useAuth } from '../contexts/AuthContext';
 import { useForm, SubmitHandler } from 'react-hook-form';
-
+import { useCreateComment } from '../libs/hooks/comment';
 interface PostProps {
   post: PostItem;
 }
@@ -24,6 +24,7 @@ function Post({ post }: PostProps) {
   const [user, setUser] = useState<User>(null);
 
   const postDelete = useDeletePost();
+  const commentCreate = useCreateComment();
 
   const authContext = useAuth();
 
@@ -76,6 +77,27 @@ function Post({ post }: PostProps) {
     formData: CommentFormValues
   ) => {
     console.log({ formData });
+    const userName = localStorage.getItem('username');
+
+    if (userName) {
+      commentCreate.mutate(
+        {
+          username: userName,
+          text: formData.comment,
+          post_id: post.id,
+        },
+        {
+          onSuccess: (data) => {
+            console.log({ data });
+            queryClient.invalidateQueries(['posts']);
+            reset();
+          },
+          onError: (err) => {
+            console.log({ err });
+          },
+        }
+      );
+    }
   };
 
   return (
@@ -114,12 +136,12 @@ function Post({ post }: PostProps) {
 
       {authContext.isAuthenticated && (
         <form
-          className="flex flex-col mt-3 ml-4 mr-4 mb-3 gap-2"
+          className="flex mt-3 ml-4 mr-4 mb-3 gap-2"
           onSubmit={handleSubmit(onSubmit)}
         >
           <hr />
           <input
-            className="p-2 mr-4"
+            className="p-2 mr-4 w-full"
             type="text"
             placeholder="Add a comment"
             {...register('comment', { required: true, maxLength: 100 })}
