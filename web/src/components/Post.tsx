@@ -3,6 +3,8 @@ import { PostItem } from '../types/post';
 import { config } from '../libs/constants';
 import { useDeletePost } from '../libs/hooks/post';
 import { queryClient } from '../App';
+import { useAuth } from '../contexts/AuthContext';
+import { useForm, SubmitHandler } from 'react-hook-form';
 
 interface PostProps {
   post: PostItem;
@@ -13,11 +15,24 @@ type User = {
   username: string;
 } | null;
 
+type CommentFormValues = {
+  comment: string;
+};
+
 function Post({ post }: PostProps) {
   const [imageUrl, setImageUrl] = useState('');
   const [user, setUser] = useState<User>(null);
 
   const postDelete = useDeletePost();
+
+  const authContext = useAuth();
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<CommentFormValues>();
 
   useEffect(() => {
     if (post.image_url_type === 'absolute') {
@@ -57,6 +72,12 @@ function Post({ post }: PostProps) {
     }
   };
 
+  const onSubmit: SubmitHandler<CommentFormValues> = (
+    formData: CommentFormValues
+  ) => {
+    console.log({ formData });
+  };
+
   return (
     <div className="flex flex-col w-2/3 mb-11 ml-auto mr-auto bg-white max-w-{500} border-2 border-gray-100 rounded-md">
       <div className="flex align-middle p-5">
@@ -90,6 +111,25 @@ function Post({ post }: PostProps) {
           </p>
         ))}
       </div>
+
+      {authContext.isAuthenticated && (
+        <form
+          className="flex flex-col mt-3 ml-4 mr-4 mb-3 gap-2"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <hr />
+          <input
+            className="p-2 mr-4"
+            type="text"
+            placeholder="Add a comment"
+            {...register('comment', { required: true, maxLength: 100 })}
+            aria-invalid={errors.comment ? 'true' : 'false'}
+          />
+          <button className="btn-link w-16" type="submit">
+            Post
+          </button>
+        </form>
+      )}
     </div>
   );
 }
